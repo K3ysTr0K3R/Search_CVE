@@ -5,7 +5,6 @@ YELLOW=$(tput setaf 3)
 CYAN=$(tput setaf 6)
 BLUE=$(tput setaf 4)
 RED=$(tput setaf 1)
-RESET=$(tput sgr0)
 
 count=0
 loading_cursor="/"
@@ -28,7 +27,7 @@ while getopts ":sf:" args; do
 			trap 'rm search_cve.txt &>/dev/null; echo "(!) User aborted the script."; exit' INT
 			cve_results=$(grep -oP "(?<=CVE-)[0-9]{4}-[0-9]{4}" "$2")
 			for cve in $cve_results; do
-				echo -ne "${YELLOW}(${CYAN}!${YELLOW}) ${BLUE}Searching for ${RED}CVE-${cve} ${YELLOW}[${CYAN}${loading_cursor}${YELLOW}]\r"
+				echo -ne "${YELLOW}(${CYAN}!${YELLOW}) ${BLUE}Searching exploits for ${RED}CVE-${cve} ${YELLOW}[${CYAN}${loading_cursor}${YELLOW}]\r"
 				result_cve=$(searchsploit --cve "$cve" 2>/dev/null)
 				if [ -n "$result_cve" ]; then
 					echo "[+] Results for: CVE-$cve $result_cve" | grep -vE "Exploits: No Results|Shellcodes: No Results" | cat >> search_cve.txt
