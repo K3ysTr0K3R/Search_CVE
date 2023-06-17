@@ -10,7 +10,7 @@ Designed with simplicity and effectiveness in mind, "Search CVE" boasts a sleek 
 
 Equipped with visually appealing features, "Search CVE" ensures an engaging and intuitive user experience. Dynamic loading cursor animations, combined with vivid output formatting, enhance readability and make the exploration process both informative and captivating.
 
-At the heart of "Search CVE" lies a commitment to responsible usage in the realm of cybersecurity. We strongly advocate for ethical conduct and compliance with legal guidelines. Always exercise caution and obtain appropriate authorization when utilizing this tool, reinforcing a culture of integrity and respect within the security community.
+At the heart of "Search CVE" lies a commitment to responsible usage in the realm of cybersecurity. I strongly advocate for ethical conduct and compliance with legal guidelines. Always exercise caution and obtain appropriate authorization when utilizing this tool, reinforcing a culture of integrity and respect within the security community.
 
 Harness the power of "Search CVE" to unlock a wealth of knowledge and empower your security research endeavors. Uncover potential vulnerabilities, gain valuable insights, and fortify your systems with confidence. Together, let's forge a path towards a more secure digital landscape.
 
