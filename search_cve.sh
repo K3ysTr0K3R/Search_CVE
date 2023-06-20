@@ -9,22 +9,14 @@ MAGENTA=$(tput setaf 5)
 
 count=0
 loading_cursor="/"
+help_menu=false
 exploit_found=false
 check_severity=false
 
-while getopts ":sf:c:" args; do
+while getopts ":hs:f:c:" args; do
     case $args in
 	    h)
-		    echo "usage: script.sh [options] [argument]"
-		    echo "Options:"
-	            echo "  -s <cve>    Search for exploits related to the specified CVE."
-                    echo "  -f <file>   Search for exploits related to the CVEs listed in the file."
-                    echo "  -d <file>   Search for exploits related to the CVEs listed in the file and check severity levels."
-                    echo ""
-                    echo "Example:"
-		    echo "  script.sh -s CVE-2021-1234"
-		    echo "  script.sh -f cve_list.txt"
-		    echo "  script.sh -d cve_list.txt"
+		    help_menu=true
 		    ;;
 	    s)
 		    result_cve=$(searchsploit --cve "$2" 2>/dev/null)
@@ -87,6 +79,20 @@ done
 
 clear
 echo ""
+if $help_menu; then
+	echo "usage: script.sh [options] [argument]"
+	echo "Options:"
+	echo "  -s <cve>    Search for exploits related to the specified CVE."
+	echo "  -f <file>   Search for exploits related to the CVEs listed in the file."
+	echo "  -c <file>   Search for exploits related to the CVEs listed in the file and check severity levels."
+	echo ""
+	echo "Example:"
+	echo "  script.sh -s CVE-2021-1234"
+	echo "  script.sh -f cve_list.txt"
+	echo "  script.sh -c cve_list.txt"
+	exit
+fi
+
 if $exploit_found; then
 	echo -e "${YELLOW}(${CYAN}i${YELLOW}) ${GREEN}Exploits found for the following CVEs from: ${RED}$2"
 	echo ""
@@ -98,8 +104,12 @@ if $exploit_found; then
 	echo ""
 	echo -e "${YELLOW}(${CYAN}i${YELLOW}) ${GREEN}Found ${RED}$count ${GREEN}exploits."
 	rm search_cve.txt
+else
+        echo -e "${YELLOW}(${CYAN}i${YELLOW}) ${GREEN}No exploits or CVEs found."
+	exit
+fi
 
-elif $check_severity; then
+if $check_severity; then
 	echo -e "${YELLOW}(${CYAN}!${YELLOW}) ${GREEN}Checking for the severity level of each CVE found from: ${RED}$2"
         echo ""
 	low_scores=("1.0" "1.5" "2.0" "2.5" "3.0" "3.5" "3.9")
@@ -152,5 +162,5 @@ elif $check_severity; then
 	echo -e "${YELLOW}(${CYAN}i${YELLOW}) ${GREEN}Found ${RED}$count ${GREEN}CVEs with exploits & severity levels."
 	rm search_cve.txt
 else
-	echo -e "${YELLOW}(${CYAN}i${YELLOW}) ${GREEN}No exploits or CVEs found."
+	echo -e "${YELLOW}(${CYAN}i${YELLOW}) ${GREEN}No exploits or CVEs with severity levels found."
 fi
