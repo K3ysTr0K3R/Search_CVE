@@ -209,7 +209,7 @@ if $check_msfconsole; then
 			echo -e "${YELLOW}[${BLUE}+${YELLOW}] ${CYAN}CVE-$cve_msfconsole ${MAGENTA}(${CYAN}MODULES${BLUE}:${GREEN}$msfconsole_modules_aux${MAGENTA})"
 		else
 			continue
-		elif [ -n "$msfconsole_modules_exp"]; then
+		elif [ -n "$msfconsole_modules_exp" ]; then
 			echo -e "${YELLOW}[${BLUE}+${YELLOW}] ${CYAN}CVE-$cve_msfconsole ${MAGENTA}(${CYAN}MODULES${BLUE}:${GREEN}$msfconsole_modules_exp${MAGENTA})"
 		else
 			continue
