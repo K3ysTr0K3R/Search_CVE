@@ -73,7 +73,9 @@ while getopts ":hs:f:c:m" args; do
 		    clear
 		    echo ""
 		    trap 'rm search_cve.txt &>/dev/null; echo "(!) User aborted the script."; exit' INT
+		    ascii_art
 		    cve_results=$(grep -oP "(?<=CVE-)[0-9]{4}-[0-9]{4}" "$2")
+		    echo ""
 		    for cve in $cve_results; do
 			    echo -ne "${YELLOW}(${CYAN}!${YELLOW}) ${BLUE}Searching exploits for ${RED}CVE-${cve} ${YELLOW}[${CYAN}${loading_cursor}${YELLOW}]\r"
 			    result_cve=$(searchsploit --cve "$cve" 2>/dev/null)
