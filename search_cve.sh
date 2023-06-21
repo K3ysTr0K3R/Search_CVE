@@ -12,8 +12,9 @@ loading_cursor="/"
 help_menu=false
 exploit_found=false
 check_severity=false
+check_msfconsole=false
 
-while getopts ":hs:f:c:" args; do
+while getopts ":hs:f:c:m" args; do
     case $args in
 	    h)
 		    help_menu=true
@@ -42,7 +43,7 @@ while getopts ":hs:f:c:" args; do
 					    exploit_found=true
 				    fi
 			    fi
-			    
+
 			    case $loading_cursor in
 				    "/") loading_cursor="-" ;;
 				    "-") loading_cursor="\\" ;;
@@ -65,13 +66,36 @@ while getopts ":hs:f:c:" args; do
 					    check_severity=true
 				    fi
 			    fi
-			    
+
 			    case $loading_cursor in
 				    "/") loading_cursor="-" ;;
 				    "-") loading_cursor="\\" ;;
 				    "\\") loading_cursor="|" ;;
 				    "|") loading_cursor="/" ;;
 			    esac
+		    done
+		    ;;
+	    m)
+		    clear
+		    echo ""
+		    trap 'rm search_cve.txt &>/dev/null; echo "(!) User aborted the script."; exit' INT
+		    cve_results=$(grep -oP "(?<=CVE-)[0-9]{4}-[0-9]{4}" "$2")
+		    for cve in $cve_results; do
+			    echo -ne "${YELLOW}(${CYAN}!${YELLOW}) ${BLUE}Searching exploits for ${RED}CVE-${cve} ${YELLOW}[${CYAN}${loading_cursor}${YELLOW}]\r"
+			    result_cve=$(searchsploit --cve "$cve" 2>/dev/null)
+			    if [ -n "$result_cve" ]; then
+				    echo "[+] Results for: CVE-$cve $result_cve" | grep -vE "Exploits: No Results|Shellcodes: No Results" | cat >> search_cve.txt
+				    if echo "$result_cve" | grep -q "Exploit"; then
+					    check_msfconsole=true
+				    fi
+			    fi
+
+                            case $loading_cursor in
+                                    "/") loading_cursor="-" ;;
+                                    "-") loading_cursor="\\" ;;
+                                    "\\") loading_cursor="|" ;;
+                                    "|") loading_cursor="/" ;;
+                            esac
 		    done
 		    ;;
     esac
@@ -119,7 +143,7 @@ if $check_severity; then
 		first_check=$(curl -s "https://www.cvedetails.com/cve/CVE-$cve/?q=CVE-$cve" | html2text | grep "Products        CVSS Score" | awk '{print $4}')
 		second_check=$(curl -s "https://www.cvedetails.com/cve/CVE-$cve/?q=CVE-$cve" | html2text | grep "Vendor_Search   CVSS Score" | awk '{print $4}')
 		third_check=$(curl -s "https://www.cvedetails.com/cve/CVE-$cve/?q=CVE-$cve" | html2text | grep "Product_Cvss    CVSS Score" | awk '{print $4}')
-                fourth_check=$(curl -s "https://www.cvedetails.com/cve/CVE-2018-1547/?q=CVE-2018-1547" | html2text | grep "Scores Versions CVSS Score" | awk '{print $5}')
+                fourth_check=$(curl -s "https://www.cvedetails.com/cve/CVE-$cve/?q=CVE-$cve" | html2text | grep "Scores Versions CVSS Score" | awk '{print $5}')
 		if [[ -n $first_check ]]; then
 			if [[ "${low_scores[@]} " =~ "$first_check" ]]; then
 				severity="${GREEN}LOW"
@@ -172,4 +196,14 @@ if $check_severity; then
 	rm search_cve.txt
 #else
 #	echo -e "${YELLOW}(${CYAN}i${YELLOW}) ${GREEN}No exploits or CVEs with severity levels found."
+fi
+
+if $check_msfconsole; then
+	cve_exploit_modules=$(grep -oP "(?<=CVE-)[0-9]{4}-[0-9]{4}" search_cve.txt | sort -u)
+	for cve_msfconsole in $cve_exploit_modules; do
+		msfconsole_modules_aux=$(msfconsole -qx "search CVE:$cve_msfconsole; exit" 2>/dev/null | grep "auxiliary/" | awk 'NR==1{print $2}')
+		if [ -n "$msfconsole_modules_aux" ]; then
+			echo -e "${YELLOW}[${BLUE}+${YELLOW}] ${CYAN}CVE-$cve_msfconsole ${MAGENTA}(${CYAN}MSFCONSOLE${BLUE}:${GREEN}$msfconsole_modules_aux${MAGENTA})"
+		fi
+	done
 fi
