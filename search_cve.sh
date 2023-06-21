@@ -5,7 +5,24 @@ YELLOW=$(tput setaf 3)
 CYAN=$(tput setaf 6)
 BLUE=$(tput setaf 4)
 RED=$(tput setaf 1)
+WHITE=$(tput setaf 7)
 MAGENTA=$(tput setaf 5)
+
+ascii_art(){
+        echo -e "${GREEN}╔═══════════════════════════════════════════════════════════════╗"
+	echo -e "${GREEN}║${RED}     _____                      __        _______    ________  ${GREEN}║"
+	echo -e "${GREEN}║${RED}    / ___/___  ____ ___________/ /_      / ____/ |  / / ____/  ${GREEN}║"
+	echo -e "${GREEN}║${RED}    \__ \/ _ \/ __  / ___/ ___/ __ \    / /    | | / / __/     ${GREEN}║"
+	echo -e "${GREEN}║${RED}   ___/ /  __/ /_/ / /  / /__/ / / /   / /___  | |/ / /___     ${GREEN}║"
+	echo -e "${GREEN}║${RED}  /____/\___/\__,_/_/   \___/_/ /_/____\____/  |___/_____/     ${GREEN}║"
+	echo -e "${GREEN}║${RED}                                 /_____/                       ${GREEN}║"
+        echo -e "${GREEN}║═══════════════════════════════════════════════════════════════║"
+        echo -e "${GREEN}║${YELLOW}                     Author: K3ysTr0K3R                        ${GREEN}║"
+        echo -e "${GREEN}║${YELLOW}             GitHub: https://github.com/K3ysTr0K3R             ${GREEN}║"
+        echo -e "${GREEN}║${YELLOW}                  Instagram: 1_k3ystr0k3r_1                    ${GREEN}║"
+        echo -e "${GREEN}║${YELLOW}                 Coded with ❤️  by K3ysTr0K3R                   ${GREEN}║"
+        echo -e "${GREEN}╚═══════════════════════════════════════════════════════════════╝"
+}
 
 count=0
 loading_cursor="/"
@@ -104,6 +121,8 @@ done
 clear
 echo ""
 if $help_menu; then
+	ascii_art
+	echo -e "${WHITE}"
 	echo "usage: script.sh [options] [argument]"
 	echo "Options:"
 	echo "  -s <cve>    Search for exploits related to the specified CVE."
