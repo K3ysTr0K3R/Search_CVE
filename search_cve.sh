@@ -207,8 +207,6 @@ if $check_msfconsole; then
                 msfconsole_modules_exp=$(msfconsole -qx "search CVE:$cve_msfconsole; exit" 2>/dev/null | grep "exploit/" | awk 'NR==1{print $2}')
 		if [ -n "$msfconsole_modules_aux" ]; then
 			echo -e "${YELLOW}[${BLUE}+${YELLOW}] ${CYAN}CVE-$cve_msfconsole ${MAGENTA}(${CYAN}MODULES${BLUE}:${GREEN}$msfconsole_modules_aux${MAGENTA})"
-		else
-			continue
 		elif [ -n "$msfconsole_modules_exp" ]; then
 			echo -e "${YELLOW}[${BLUE}+${YELLOW}] ${CYAN}CVE-$cve_msfconsole ${MAGENTA}(${CYAN}MODULES${BLUE}:${GREEN}$msfconsole_modules_exp${MAGENTA})"
 		else
