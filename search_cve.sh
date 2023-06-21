@@ -199,14 +199,23 @@ if $check_severity; then
 fi
 
 if $check_msfconsole; then
-	echo -e "${YELLOW}(${CYAN}!${YELLOW}) ${GREEN}Checking for available msfconsole(Metasploit) modules from each CVE found from: ${RED}$2"
+	echo -e "${YELLOW}(${CYAN}!${YELLOW}) ${GREEN}Checking for available ${YELLOW}msfconsole${MAGENTA}(${YELLOW}Metasploit${MAGENTA}) ${GREEN}modules from each CVE found from${BLUE}: ${RED}$2"
         echo ""
 	cve_exploit_modules=$(grep -oP "(?<=CVE-)[0-9]{4}-[0-9]{4}" search_cve.txt | sort -u)
 	for cve_msfconsole in $cve_exploit_modules; do
 		msfconsole_modules_aux=$(msfconsole -qx "search CVE:$cve_msfconsole; exit" 2>/dev/null | grep "auxiliary/" | awk 'NR==1{print $2}')
+                msfconsole_modules_exp=$(msfconsole -qx "search CVE:$cve_msfconsole; exit" 2>/dev/null | grep "exploit/" | awk 'NR==1{print $2}')
 		if [ -n "$msfconsole_modules_aux" ]; then
-			echo -e "${YELLOW}[${BLUE}+${YELLOW}] ${CYAN}CVE-$cve_msfconsole ${MAGENTA}(${CYAN}MSFCONSOLE${BLUE}:${GREEN}$msfconsole_modules_aux${MAGENTA})"
+			echo -e "${YELLOW}[${BLUE}+${YELLOW}] ${CYAN}CVE-$cve_msfconsole ${MAGENTA}(${CYAN}MODULES${BLUE}:${GREEN}$msfconsole_modules_aux${MAGENTA})"
+		else
+			continue
+		elif [ -n "$msfconsole_modules_exp"]; then
+			echo -e "${YELLOW}[${BLUE}+${YELLOW}] ${CYAN}CVE-$cve_msfconsole ${MAGENTA}(${CYAN}MODULES${BLUE}:${GREEN}$msfconsole_modules_exp${MAGENTA})"
+		else
+			continue
 		fi
+                ((count++))
 	done
-        echo -e "${YELLOW}(${CYAN}i${YELLOW}) ${GREEN}Found ${RED}$count ${GREEN}CVEs with exploits from msfconsole(Metasploit)."
+        echo ""
+        echo -e "${YELLOW}(${CYAN}i${YELLOW}) ${GREEN}Found ${RED}$count ${GREEN}CVEs with exploits from ${YELLOW}msfconsole${MAGENTA}(${YELLOW}Metasploit${MAGENTA})${GREEN}."
 fi
