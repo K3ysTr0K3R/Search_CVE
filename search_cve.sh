@@ -132,7 +132,7 @@ if $exploit_found; then
 fi
 
 if $check_severity; then
-	echo -e "${YELLOW}(${CYAN}!${YELLOW}) ${GREEN}Checking for the severity level of each CVE found from: ${RED}$2"
+	echo -e "${YELLOW}(${CYAN}!${YELLOW}) ${GREEN}Checking for the severity level of each CVE found to be exploitable from: ${RED}$2"
         echo ""
 	low_scores=("1.0" "1.5" "2.0" "2.5" "3.0" "3.5" "3.9")
 	medium_scores=("4.0" "4.1" "4.2" "4.3" "4.4" "4.5" "4.6" "4.7" "4.8" "4.9" "5.0" "5.1" "5.2" "5.3" "5.4" "5.5" "5.6" "5.7" "5.8" "5.9" "6.0" "6.1" "6.2" "6.3" "6.4" "6.5" "6.6" "6.7" "6.8" "6.9")
@@ -199,6 +199,8 @@ if $check_severity; then
 fi
 
 if $check_msfconsole; then
+	echo -e "${YELLOW}(${CYAN}!${YELLOW}) ${GREEN}Checking for available msfconsole(Metasploit) modules from each CVE found from: ${RED}$2"
+        echo ""
 	cve_exploit_modules=$(grep -oP "(?<=CVE-)[0-9]{4}-[0-9]{4}" search_cve.txt | sort -u)
 	for cve_msfconsole in $cve_exploit_modules; do
 		msfconsole_modules_aux=$(msfconsole -qx "search CVE:$cve_msfconsole; exit" 2>/dev/null | grep "auxiliary/" | awk 'NR==1{print $2}')
@@ -206,4 +208,5 @@ if $check_msfconsole; then
 			echo -e "${YELLOW}[${BLUE}+${YELLOW}] ${CYAN}CVE-$cve_msfconsole ${MAGENTA}(${CYAN}MSFCONSOLE${BLUE}:${GREEN}$msfconsole_modules_aux${MAGENTA})"
 		fi
 	done
+        echo -e "${YELLOW}(${CYAN}i${YELLOW}) ${GREEN}Found ${RED}$count ${GREEN}CVEs with exploits from msfconsole(Metasploit)."
 fi
