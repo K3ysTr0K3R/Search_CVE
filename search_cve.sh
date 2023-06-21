@@ -90,7 +90,6 @@ if $help_menu; then
 	echo "  script.sh -s CVE-2021-1234"
 	echo "  script.sh -f cve_list.txt"
 	echo "  script.sh -c cve_list.txt"
-	exit
 fi
 
 if $exploit_found; then
@@ -104,9 +103,8 @@ if $exploit_found; then
 	echo ""
 	echo -e "${YELLOW}(${CYAN}i${YELLOW}) ${GREEN}Found ${RED}$count ${GREEN}exploits."
 	rm search_cve.txt
-else
-        echo -e "${YELLOW}(${CYAN}i${YELLOW}) ${GREEN}No exploits or CVEs found."
-	exit
+#else
+        #echo -e "${YELLOW}(${CYAN}i${YELLOW}) ${GREEN}No exploits or CVEs found."
 fi
 
 if $check_severity; then
@@ -121,6 +119,7 @@ if $check_severity; then
 		first_check=$(curl -s "https://www.cvedetails.com/cve/CVE-$cve/?q=CVE-$cve" | html2text | grep "Products        CVSS Score" | awk '{print $4}')
 		second_check=$(curl -s "https://www.cvedetails.com/cve/CVE-$cve/?q=CVE-$cve" | html2text | grep "Vendor_Search   CVSS Score" | awk '{print $4}')
 		third_check=$(curl -s "https://www.cvedetails.com/cve/CVE-$cve/?q=CVE-$cve" | html2text | grep "Product_Cvss    CVSS Score" | awk '{print $4}')
+                fourth_check=$(curl -s "https://www.cvedetails.com/cve/CVE-2018-1547/?q=CVE-2018-1547" | html2text | grep "Scores Versions CVSS Score" | awk '{print $5}')
 		if [[ -n $first_check ]]; then
 			if [[ "${low_scores[@]} " =~ "$first_check" ]]; then
 				severity="${GREEN}LOW"
@@ -131,7 +130,7 @@ if $check_severity; then
 			elif [[ "${critical_scores[@]}" =~ "$first_check" ]]; then
 				severity="${RED}CRITICAL"
 			fi
-		
+
 		elif [[ -n $second_check ]]; then
 			if [[ "${low_scores[@]} " =~ "$second_check" ]]; then
 				severity="${GREEN}LOW"
@@ -142,7 +141,7 @@ if $check_severity; then
 			elif [[ "${critical_scores[@]}" =~ "$second_check" ]]; then
 				severity="${RED}CRITICAL"
 			fi
-		
+
 		elif [[ -n $third_check ]]; then
 			if [[ "${low_scores[@]} " =~ "$third_check" ]]; then
 				severity="${GREEN}LOW"
@@ -153,6 +152,16 @@ if $check_severity; then
 			elif [[ "${critical_scores[@]}" =~ "$third_check" ]]; then
 				severity="${RED}CRITICAL"
 			fi
+                elif [[ -n $fourth_check ]]; then
+                        if [[ "${low_scores[@]} " =~ "$fourth_check" ]]; then
+                                severity="${GREEN}LOW"
+                        elif [[ "${medium_scores[@]}" =~ "$fourth_check" ]]; then
+                                severity="${YELLOW}MEDIUM"
+                        elif [[ " ${high_scores[@]}" =~ "$fourth_check" ]]; then
+                                severity="${YELLOW}HIGH"
+                        elif [[ "${critical_scores[@]}" =~ "$fourth_check" ]]; then
+                                severity="${RED}CRITICAL"
+                        fi
 		fi
 
 		echo -e "${YELLOW}[${BLUE}+${YELLOW}] ${CYAN}CVE-$cve ${MAGENTA}(${CYAN}SEVERITY${BLUE}:${severity}${MAGENTA})"
@@ -161,6 +170,6 @@ if $check_severity; then
 	echo ""
 	echo -e "${YELLOW}(${CYAN}i${YELLOW}) ${GREEN}Found ${RED}$count ${GREEN}CVEs with exploits & severity levels."
 	rm search_cve.txt
-else
-	echo -e "${YELLOW}(${CYAN}i${YELLOW}) ${GREEN}No exploits or CVEs with severity levels found."
+#else
+#	echo -e "${YELLOW}(${CYAN}i${YELLOW}) ${GREEN}No exploits or CVEs with severity levels found."
 fi
