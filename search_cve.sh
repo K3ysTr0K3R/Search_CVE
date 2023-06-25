@@ -37,6 +37,7 @@ while getopts ":hs:f:c:m" args; do
 		    help_menu=true
 		    ;;
 	    s)
+		    ascii_art
 		    result_cve=$(searchsploit --cve "$2" 2>/dev/null)
 		    if [ -n "$result_cve" ]; then
 			    echo "Results for $2"
@@ -98,7 +99,9 @@ while getopts ":hs:f:c:m" args; do
 		    clear
 		    echo ""
 		    trap 'rm search_cve.txt &>/dev/null; echo "(!) User aborted the script."; exit' INT
+                    ascii_art
 		    cve_results=$(grep -oP "(?<=CVE-)[0-9]{4}-[0-9]{4}" "$2")
+		    echo ""
 		    for cve in $cve_results; do
 			    echo -ne "${YELLOW}(${CYAN}!${YELLOW}) ${BLUE}Searching exploits for ${RED}CVE-${cve} ${YELLOW}[${CYAN}${loading_cursor}${YELLOW}]\r"
 			    result_cve=$(searchsploit --cve "$cve" 2>/dev/null)
@@ -125,19 +128,23 @@ echo ""
 if $help_menu; then
 	ascii_art
 	echo -e "${WHITE}"
-	echo "usage: script.sh [options] [argument]"
+	echo "usage: search_cve.sh [options] [argument]"
 	echo "Options:"
 	echo "  -s <cve>    Search for exploits related to the specified CVE."
 	echo "  -f <file>   Search for exploits related to the CVEs listed in the file."
 	echo "  -c <file>   Search for exploits related to the CVEs listed in the file and check severity levels."
+        echo "  -f <file>   Search for exploits related to the CVEs listed in the file and check msfconsole(Metasploit) modules."
 	echo ""
 	echo "Example:"
-	echo "  script.sh -s CVE-2021-1234"
-	echo "  script.sh -f cve_list.txt"
-	echo "  script.sh -c cve_list.txt"
+	echo "  search_cve.sh -s CVE-2021-1234"
+	echo "  search_cve.sh -f cve_list.txt"
+	echo "  search_cve.sh -c cve_list.txt"
+	echo "  search_cve.sh -m cve_list.txt"
 fi
 
 if $exploit_found; then
+	ascii_art
+	echo ""
 	echo -e "${YELLOW}(${CYAN}i${YELLOW}) ${GREEN}Exploits found for the following CVEs from: ${RED}$2"
 	echo ""
 	CVE=$(grep -oP "(?<=CVE-)[0-9]{4}-[0-9]{4}" search_cve.txt | sort -u)
@@ -153,6 +160,8 @@ if $exploit_found; then
 fi
 
 if $check_severity; then
+	ascii_art
+	echo ""
 	echo -e "${YELLOW}(${CYAN}!${YELLOW}) ${GREEN}Checking for the severity level of each CVE found to be exploitable from: ${RED}$2"
         echo ""
 	low_scores=("1.0" "1.5" "2.0" "2.5" "3.0" "3.5" "3.9")
@@ -220,6 +229,8 @@ if $check_severity; then
 fi
 
 if $check_msfconsole; then
+	ascii_art
+	echo ""
 	echo -e "${YELLOW}(${CYAN}!${YELLOW}) ${GREEN}Checking for available ${YELLOW}msfconsole${MAGENTA}(${YELLOW}Metasploit${MAGENTA}) ${GREEN}modules from each CVE found from${BLUE}: ${RED}$2"
         echo ""
 	cve_exploit_modules=$(grep -oP "(?<=CVE-)[0-9]{4}-[0-9]{4}" search_cve.txt | sort -u)
